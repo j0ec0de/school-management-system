@@ -123,7 +123,7 @@ BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, 
                     BusyIndicator.hide();
                     const aStudents = data.value;
 
-                    console.log(aStudents);
+                    console.log("Students: ",aStudents);
 
                     // sort
 
