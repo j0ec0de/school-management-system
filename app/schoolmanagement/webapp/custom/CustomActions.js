@@ -20,94 +20,94 @@ BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, 
     "use strict";
 
     return {
-        create: function(oController) {
+        // create: function(oController) {
 
-            const oModel = oController.getView().getModel();
+        //     const oModel = oController.getView().getModel();
 
 
-            // Popup model
-            const oPopupModel = new JSONModel({
-                ID: "",
-                departmentName: ""
-            });
+        //     // Popup model
+        //     const oPopupModel = new JSONModel({
+        //         ID: "",
+        //         departmentName: ""
+        //     });
 
-            const oDialog = new Dialog({
-                title: "Create Department",
-                type: "Message",
-                contentWidth: "380px",
-                content: new VBox({
-                    width: "100%",
-                    items: [
+        //     const oDialog = new Dialog({
+        //         title: "Create Department",
+        //         type: "Message",
+        //         contentWidth: "380px",
+        //         content: new VBox({
+        //             width: "100%",
+        //             items: [
 
-                        new Label({ text: "Department ID", required: true }),
-                        new Input({
-                            value: "{popupModel>/ID}",
-                            placeholder: "Enter ID (10 chars)"
-                        }),
+        //                 new Label({ text: "Department ID", required: true }),
+        //                 new Input({
+        //                     value: "{popupModel>/ID}",
+        //                     placeholder: "Enter ID (10 chars)"
+        //                 }),
 
-                        new Label({ text: "Department Name", required: true }),
-                        new Input({
-                            value: "{popupModel>/departmentName}",
-                            placeholder: "Enter department name"
-                        })
-                    ]
-                }),
+        //                 new Label({ text: "Department Name", required: true }),
+        //                 new Input({
+        //                     value: "{popupModel>/departmentName}",
+        //                     placeholder: "Enter department name"
+        //                 })
+        //             ]
+        //         }),
 
-                beginButton: new Button({
-                    type: ButtonType.Emphasized,
-                    text: "Create",
-                    press: async function() {
+        //         beginButton: new Button({
+        //             type: ButtonType.Emphasized,
+        //             text: "Create",
+        //             press: async function() {
 
-                        const ID = oPopupModel.getProperty("/ID");
-                        const name = oPopupModel.getProperty("/departmentName");
+        //                 const ID = oPopupModel.getProperty("/ID");
+        //                 const name = oPopupModel.getProperty("/departmentName");
 
-                        if (!ID || !name) {
-                            MessageBox.error("Please fill all required fields.");
-                            return;
-                        }
+        //                 if (!ID || !name) {
+        //                     MessageBox.error("Please fill all required fields.");
+        //                     return;
+        //                 }
 
-                        if (ID.length > 10) {
-                            MessageBox.error("ID must be max 10 characters.");
-                            return;
-                        }
+        //                 if (ID.length > 10) {
+        //                     MessageBox.error("ID must be max 10 characters.");
+        //                     return;
+        //                 }
 
-                        BusyIndicator.show(0);
+        //                 BusyIndicator.show(0);
 
-                        try {
+        //                 try {
 
-                            const oContext = oModel.bindContext("/Department").create({
-                                departmentName: name
-                            });
+        //                     const oContext = oModel.bindContext("/Department").create({
+        //                         departmentName: name
+        //                     });
 
-                            await oContext.created();
+        //                     await oContext.created();
 
-                            MessageToast.show("Department created successfully!");
-                            oDialog.close();
+        //                     MessageToast.show("Department created successfully!");
+        //                     oDialog.close();
 
-                        } catch (err) {
-                            MessageBox.error("Failed to create Department: " + err.message);
-                        } finally {
-                            BusyIndicator.hide();
-                        }
-                    }
-                }),
+        //                 } catch (err) {
+        //                     MessageBox.error("Failed to create Department: " + err.message);
+        //                 } finally {
+        //                     BusyIndicator.hide();
+        //                 }
+        //             }
+        //         }),
 
-                endButton: new Button({
-                    type: ButtonType.Reject,
-                    text: "Cancel",
-                    press: function() {
-                        oDialog.close();
-                    }
-                }),
+        //         endButton: new Button({
+        //             type: ButtonType.Reject,
+        //             text: "Cancel",
+        //             press: function() {
+        //                 oDialog.close();
+        //             }
+        //         }),
 
-                afterClose: function() {
-                    oDialog.destroy();
-                }
-            });
+        //         afterClose: function() {
+        //             oDialog.destroy();
+        //         }
+        //     });
 
-            oDialog.setModel(oPopupModel, "popupModel");
-            oDialog.open();
-        },
+        //     oDialog.setModel(oPopupModel, "popupModel");
+        //     oDialog.open();
+        // },
 
         // sort students
 
