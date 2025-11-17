@@ -1,0 +1,9 @@
+{
+    "actions": [
+        {
+            "id": "openReadmeFile",
+            "actionType": "FILE",
+            "uri": "file:///home/user/projects/school-management-system/.gen/generation.log"
+        }
+    ]
+}

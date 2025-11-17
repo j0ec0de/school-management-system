@@ -1,0 +1,6 @@
+ID;firstName;lastName;email;phone;department_ID
+T001;Ravi;Kumar;ravi.kumar@school.com;9876543210;D001
+T002;Anita;Sharma;anita.sharma@school.com;9876543211;D001
+T003;Suresh;Pillai;suresh.pillai@school.com;9876543212;D002
+T004;Mary;Thomas;mary.thomas@school.com;9876543213;D003
+T005;John;Mathew;john.mathew@school.com;9876543214;D004

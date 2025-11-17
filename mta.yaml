@@ -1,0 +1,172 @@
+_schema-version: 3.3.0
+ID: school-management-system
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: school-management-system-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: school-management-system-auth
+  - name: school-management-system-db
+  - name: school-management-system-connectivity
+  - name: school-management-system-destination
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: school-management-system-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: school-management-system-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: school-management-system
+  type: approuter.nodejs
+  path: app/router
+  requires:
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      url: ~{srv-url}
+  - name: school-management-system-auth
+  - name: school-management-system-destination
+  - name: school-management-system-html5-runtime
+  provides:
+  - name: app-api
+    properties:
+      app-protocol: ${protocol}
+      app-uri: ${default-uri}
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+- name: school-management-system-app-deployer
+  type: com.sap.application.content
+  path: gen
+  requires:
+  - name: school-management-system-auth
+  - name: srv-api
+  - name: school-management-system-html5-repo-host
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+      content-target: true
+  build-parameters:
+    build-result: app/
+    requires:
+    - artifacts:
+      - admin-books.zip
+      name: schoolmanagementsystemadminbooks
+      target-path: app/
+    - artifacts:
+      - browse.zip
+      name: schoolmanagementsystembrowse
+      target-path: app/
+    - artifacts:
+      - schoolmanagement.zip
+      name: schoolmanagement
+      target-path: app/
+- name: schoolmanagementsystemadminbooks
+  type: html5
+  path: app/admin-books
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm ci
+    - npm run build
+    supported-platforms: []
+- name: schoolmanagementsystembrowse
+  type: html5
+  path: app/browse
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm ci
+    - npm run build
+    supported-platforms: []
+- name: schoolmanagement
+  type: html5
+  path: app/schoolmanagement
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: school-management-system-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      oauth2-configuration:
+        redirect-uris:
+        - https://*~{app-api/app-uri}/**
+      role-collections:
+      - description: generated
+        name: admin (school-management-system ${org}-${space})
+        role-template-references:
+        - $XSAPPNAME.admin
+      tenant-mode: dedicated
+      xsappname: school-management-system-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+  requires:
+  - name: app-api
+- name: school-management-system-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: school-management-system-connectivity
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: connectivity
+    service-plan: lite
+- name: school-management-system-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+    service: destination
+    service-plan: lite
+- name: school-management-system-html5-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+- name: school-management-system-html5-runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

@@ -1,0 +1,7 @@
+ID;rollNumber;admissionNumber;dateOfBirth;gender;bloodGroup;address;student_ID
+SD001;R101;ADM001;2010-04-15;Male;A+;"12 MG Road, Chennai";S001
+SD002;R102;ADM002;2010-07-20;Female;O+;"22 Lake View, Chennai";S002
+SD003;R103;ADM003;2009-11-11;Male;B+;"18 MG Street, Kochi";S003
+SD004;R104;ADM004;2008-05-03;Female;AB+;"7 Sea Road, Kochi";S004
+SD005;R105;ADM005;2007-03-22;Male;A-;"10 Park Lane, Bangalore";S005
+SD006;R106;ADM006;2008-09-15;Female;O-;"43 MG Road, Hyderabad";S006
