@@ -1,5 +1,9 @@
 using SchoolService as service from '../../srv/school-service';
 annotate service.Department with @(
+    UI.HeaderInfo : {
+        TypeName        : 'Department',
+        TypeNamePlural  : 'Departments',    
+    },
     UI.FieldGroup #GeneratedGroup : {
         $Type : 'UI.FieldGroupType',
         Data : [
@@ -10,7 +14,7 @@ annotate service.Department with @(
             },
             {
                 $Type : 'UI.DataField',
-                Label : 'departmentName',
+                Label : 'Department Name',
                 Value : departmentName,
             },
         ],
@@ -36,7 +40,7 @@ annotate service.Department with @(
         },
         {
             $Type : 'UI.DataField',
-            Label : 'departmentName',
+            Label : 'Department Name',
             Value : departmentName,
         },
     ],

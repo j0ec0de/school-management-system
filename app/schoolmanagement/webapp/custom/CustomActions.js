@@ -12,102 +12,113 @@ sap.ui.define([
     "sap/m/Text",
     "sap/f/Card",
     "sap/m/VBox",
+    "sap/m/Label",
     "sap/m/List",
-    "sap/m/StandardListItem"
+    "sap/m/StandardListItem",
+    "sap/m/Input"
 ], function(
-BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, Table, Column, ColumnListItem, Text, Card, VBox, List, StandardListItem 
+BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, Table, Column, ColumnListItem, Text, Card, VBox, List, StandardListItem, Label, Input
 ) {
     "use strict";
 
     return {
-        // create: function(oController) {
+        
+        create: function() {
+            const that = this; // to keep the context of the controller
 
-        //     const oModel = oController.getView().getModel();
+            // Check if the dialog already exists, if not, create it
+            if (!this.oDeptDialog) {
 
+                this.oDeptDialog = new Dialog({
+                    title: "Create Department",
+                    contentWidth: "380px",
+                    draggable: true,
+                    resizable: true,
 
-        //     // Popup model
-        //     const oPopupModel = new JSONModel({
-        //         ID: "",
-        //         departmentName: ""
-        //     });
+                    content: [
+                        new Label({ text: "Department ID" }),  // Label for Department ID
+                        new Input("departmentID", { placeholder: "Enter Department ID" }),  // Input for ID
 
-        //     const oDialog = new Dialog({
-        //         title: "Create Department",
-        //         type: "Message",
-        //         contentWidth: "380px",
-        //         content: new VBox({
-        //             width: "100%",
-        //             items: [
+                        new Label({ text: "Department Name" }),  // Label for Department Name
+                        new Input("departmentName", { placeholder: "Enter Department Name" })  // Input for Name
+                    ],
 
-        //                 new Label({ text: "Department ID", required: true }),
-        //                 new Input({
-        //                     value: "{popupModel>/ID}",
-        //                     placeholder: "Enter ID (10 chars)"
-        //                 }),
+                    // Define the Create button
+                    beginButton: new Button({
+                        text: "Create",
+                        type: "Emphasized",
+                        press: function() {
+                            // Get the values of the input fields
+                            const oID = sap.ui.getCore().byId("departmentID").getValue();
+                            const oName = sap.ui.getCore().byId("departmentName").getValue();
 
-        //                 new Label({ text: "Department Name", required: true }),
-        //                 new Input({
-        //                     value: "{popupModel>/departmentName}",
-        //                     placeholder: "Enter department name"
-        //                 })
-        //             ]
-        //         }),
+                            // Basic validation
+                            if (!oID || !oName) {
+                                MessageToast.show("Please fill all the required fields");
+                                return;
+                            }
 
-        //         beginButton: new Button({
-        //             type: ButtonType.Emphasized,
-        //             text: "Create",
-        //             press: async function() {
+                            // Validate ID length
+                            if (oID.length > 10) {
+                                MessageToast.show("Department ID cannot be more than 10 characters");
+                                return;
+                            }
 
-        //                 const ID = oPopupModel.getProperty("/ID");
-        //                 const name = oPopupModel.getProperty("/departmentName");
+                            // Show busy indicator while processing
+                            BusyIndicator.show(100);
 
-        //                 if (!ID || !name) {
-        //                     MessageBox.error("Please fill all required fields.");
-        //                     return;
-        //                 }
+                            // Make the AJAX call to create the department
+                            $.ajax({
+                                url: "/odata/v4/school/createDepartment",  // URL of the service to create department
+                                type: "POST",  // HTTP method
+                                contentType: "application/json",  // The content type of the data being sent
+                                data: JSON.stringify({
+                                    ID: oID,
+                                    departmentName: oName
+                                }),  // Data to send in the POST request
 
-        //                 if (ID.length > 10) {
-        //                     MessageBox.error("ID must be max 10 characters.");
-        //                     return;
-        //                 }
+                                success: function(response) {
+                                    // Hide the busy indicator when done
+                                    BusyIndicator.hide();
 
-        //                 BusyIndicator.show(0);
+                                    // Show a success message
+                                    MessageToast.show("Department created successfully!");
 
-        //                 try {
+                                    // Clear the input fields
+                                    sap.ui.getCore().byId("departmentID").setValue("");
+                                    sap.ui.getCore().byId("departmentName").setValue("");
 
-        //                     const oContext = oModel.bindContext("/Department").create({
-        //                         departmentName: name
-        //                     });
+                                    // Close the dialog
+                                    that.oDeptDialog.close();
 
-        //                     await oContext.created();
+                                    // Refresh the model (if needed)
+                                    sap.ui.getCore().getModel().refresh(true);
+                                },
 
-        //                     MessageToast.show("Department created successfully!");
-        //                     oDialog.close();
+                                error: function(error) {
+                                    // Hide the busy indicator in case of an error
+                                    BusyIndicator.hide();
 
-        //                 } catch (err) {
-        //                     MessageBox.error("Failed to create Department: " + err.message);
-        //                 } finally {
-        //                     BusyIndicator.hide();
-        //                 }
-        //             }
-        //         }),
+                                    // Show an error message
+                                    MessageToast.show("Error creating department.");
+                                }
+                            });
+                        }
+                    }),
 
-        //         endButton: new Button({
-        //             type: ButtonType.Reject,
-        //             text: "Cancel",
-        //             press: function() {
-        //                 oDialog.close();
-        //             }
-        //         }),
+                    // Define the Cancel button
+                    endButton: new Button({
+                        text: "Cancel",
+                        press: function() {
+                            that.oDeptDialog.close();  // Close the dialog when the Cancel button is clicked
+                        }
+                    })
+                });
+            }
 
-        //         afterClose: function() {
-        //             oDialog.destroy();
-        //         }
-        //     });
-
-        //     oDialog.setModel(oPopupModel, "popupModel");
-        //     oDialog.open();
-        // },
+            // Open the dialog
+            this.oDeptDialog.open();
+        },
 
         // sort students
 
