@@ -122,11 +122,20 @@ BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, 
 
         // sort students
 
-        sort: function() {
-            BusyIndicator.show(0);
+        sort: function(oContext) {
+            BusyIndicator.show(0); 
+            
+            if(!oContext) {
+                BusyIndicator.hide();
+                console.log("context not recieved");
+                return;
+            }
 
+            const teacherID = oContext.getProperty("ID");
+            
+            
             jQuery.ajax({
-                url: "/odata/v4/school/Student",
+                url: `/odata/v4/school/Teacher('${teacherID}')/students`,
                 type: "GET",
                 contentType: "application/json",
 
@@ -185,6 +194,75 @@ BusyIndicator, MessageToast, Dialog, Button, ButtonType, MessageBox, JSONModel, 
                             oDialog.destroy();
                         }
 
+                    });
+                    oDialog.open();
+                },
+
+                error: function(error) {
+                    BusyIndicator.hide();
+                    MessageBox.error(`Failed: ${error}`);
+                }
+            })
+        }, 
+
+        sortDepartment: function() {
+            BusyIndicator.show(0);
+
+            jQuery.ajax({
+                url: "/odata/v4/school/Department",
+                type: "GET",
+                contentType: "application/json",
+
+                success: function(data) {
+                    BusyIndicator.hide();
+
+                    const aDepartments = data.value;
+                    console.log("Departments: ",aDepartments);
+
+                    // sort
+
+                    aDepartments.sort(function(a, b){
+                        return a.departmentName.localeCompare(b.departmentName)
+                    });
+
+                    const oSortedModel = new JSONModel(aDepartments);
+
+                    const oTable = new Table({
+                        columns: [
+                            new Column({
+                                header: new Text({ text: "ID" })
+                            }),
+                            new Column({
+                                header: new Text({ text: "Department Name" })
+                            }),
+                        ],
+                        items: {
+                            path: "/",
+                            template: new ColumnListItem({
+                                cells: [
+                                    new Text({ text: "{ID}" }),
+                                    new Text({ text: "{departmentName}" })
+                                ]
+                            })
+                        }
+                    });
+
+                    oTable.setModel(oSortedModel);
+
+                    const oDialog = new Dialog({
+                        title: 'Departments',
+                        contentWidth: "50rem",
+                        contentHeight: "30rem",
+                        content: [oTable],
+                        endButton: new Button({
+                            text: "Cancel",
+                            press: function() {
+                                oDialog.close();
+                            }
+                        }),
+                        afterClose: function() {
+                            oDialog.destroy();
+                        }
                     });
                     oDialog.open();
                 },

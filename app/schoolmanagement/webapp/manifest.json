@@ -133,6 +133,12 @@
                       "text": "Create",
                       "enabled": true,
                       "visible": true
+                    },
+                    "sortDepartment": {
+                      "press": "schoolmanagement.custom.CustomActions.sortDepartment",
+                      "text": "Sort",
+                      "enabled": true,
+                      "visible": true
                     }
                   }
                 }
@@ -182,6 +188,7 @@
                     "sort": {
                       "press": "schoolmanagement.custom.CustomActions.sort",
                       "text": "Sort",
+                      "requiresContext": true,
                       "enabled": true,
                       "visible": true
                     }
